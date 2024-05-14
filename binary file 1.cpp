@@ -1,66 +1,81 @@
 #include <iostream>
-#include <iomanip>
 #include <fstream>
-#include <cstring>
-
+#include <iomanip> // for setfill and setw
 using namespace std;
 
-class timeVal {
-    int hh, mm, ss;
-    char ampm[3];
-public:
-    void setdata(int h, int m, int s, const char* half) {
-        hh = h;
-        mm = m;
-        ss = s;
-        strcpy(ampm, half);
+#define FILE_NAME "time.dat"
+
+// function to write time into the file
+void writeTime(int h, int m, int s) {
+    char str[10];
+    fstream file;
+    file.open(FILE_NAME, ios::out | ios::binary);
+
+    if (!file) {
+        cout << "Error in creating file!!!" << endl;
+        return;
     }
 
-    void showdata() {
-        cout << "\nThe Time is: ";
-        cout << setfill('0') << setw(2) << hh << ":";
-        cout << setfill('0') << setw(2) << mm << ":";
-        cout << setfill('0') << setw(2) << ss << " ";
-        cout << ampm << endl << endl;
+    // make string to write
+    sprintf(str, "%02d:%02d:%02d", h, m, s);
+
+    // write into file
+    file.write(str, sizeof(str));
+    cout << "Time " << str << " has been written into file." << endl;
+
+    // close the file
+    file.close();
+}
+
+// function to read time from the file
+void readTime(int* h, int* m, int* s) {
+    char str[10];
+    int inH, inM, inS;
+    fstream fin;
+
+    fin.open(FILE_NAME, ios::in | ios::binary);
+
+    if (!fin) {
+        cout << "Error in file opening..." << endl;
+        return;
     }
-};
+
+    if (fin.read((char*)str, sizeof(str))) {
+        // extract time values from the file
+        sscanf(str, "%02d:%02d:%02d", &inH, &inM, &inS);
+
+        // assign time into variables, which are passing in function
+        *h = inH;
+        *m = inM;
+        *s = inS;
+    }
+
+    fin.close();
+}
 
 int main() {
-    timeVal writeObj, readObj;
-    int hh, mm, ss;
-    char ampm[3];
+    int h, m, s;
 
-    cout << "Enter Hours: ";
-    cin >> hh;
-    cout << "Enter Minutes: ";
-    cin >> mm;
-    cout << "Enter Seconds: ";
-    cin >> ss;
-    cout << "Enter am or pm: ";
-    cin >> ampm;
+    cout << "Enter hour: ";
+    cin >> h;
+    cout << "Enter minute: ";
+    cin >> m;
+    cout << "Enter second: ";
+    cin >> s;
 
-    writeObj.setdata(hh, mm, ss, ampm);
+    // write time into file
+    writeTime(h, m, s);
 
-    ofstream outFile("TimeFile", ios::out | ios::binary);
-    if (!outFile) {
-        cout << "Cannot open file.\n";
-        return 1;
-    }
+    // now, reset the variables
+    h = m = s = 0;
 
-    outFile.write((char*)&writeObj, sizeof(timeVal));
-    cout << "\nWritten the time object successfully to binary file" << endl;
-    outFile.close();
+    // read time from the file
+    readTime(&h, &m, &s);
 
-    ifstream inFile("TimeFile", ios::in | ios::binary);
-    if (!inFile) {
-        cout << "Cannot open file.\n";
-        return 1;
-    }
-
-    inFile.read((char*)&readObj, sizeof(timeVal));
-    cout << "\nRead the time object successfully from binary file" << endl;
-    readObj.showdata();
-    inFile.close();
+    // print the time
+    cout << "The time is " << setw(2) << setfill('0') << h << ":"
+         << setw(2) << setfill('0') << m << ":"
+         << setw(2) << setfill('0') << s << endl;
 
     return 0;
 }
