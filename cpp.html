@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPP Code Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h4 {
+            text-align: center;
+            color: #333;
+        }
+
+        .code-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        pre {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow: auto;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>C++ Lab Exam Program 7 and 8</h1>
+        <h4>Lab 7: C++ Program to Demonstrate File Handling</h4>
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode('lab7')">Copy Code</button>
+            <pre id="lab7"><code>
+#include<iostream>
+#include<conio.h>
+#include<fstream>
+using namespace std;
+                
+int main()
+{
+    string flName;
+    char msg[40], ch;
+                
+    cout << "Enter the file name that you want to create :" << endl;
+    cin >> flName;
+    cin.get();
+                
+    ofstream fout(flName.c_str());
+    if (fout.fail())
+    {
+        cout << "\n Failed to create the file !!";
+    }
+    else
+    {
+        cout << "\n File " << flName << " Created successfully!!";
+    }
+                
+    cout << "Enter the message:" << endl;
+    cin.get(msg, 40);
+    fout << msg << endl;
+                
+    fout.close();
+                
+    ifstream fin(flName.c_str());
+    if (fin.fail())
+    {
+        cout << "\n Failed to open the file !!";
+    }
+    else
+    {
+        cout << "Here are the contents of " << flName << ":" << endl;
+        while (fin.get(ch))
+            cout << ch;
+        cout << "\n Done reading the file content!!";
+        fin.close();
+    }
+                
+    return 0;
+}
+            </code></pre>
+        </div>
+        <h4>Lab 8: C++ Program to Demonstrate Binary File Handling</h4>
+        <div class="code-container">
+            <button class="copy-button" onclick="copyCode('lab8')">Copy Code</button>
+            <pre id="lab8"><code>
+#include <iostream>
+#include <fstream>
+#include <iomanip> // for setfill and setw
+using namespace std;
+    
+#define FILE_NAME "time.dat"
+
+void writeTime(int h, int m, int s) {
+    char str[10];
+    fstream file;
+    file.open(FILE_NAME, ios::out | ios::binary);
+
+    if (!file) {
+        cout << "Error in creating file!!!" << endl;
+        return;
+    }
+    sprintf(str, "%02d:%02d:%02d", h, m, s);
+    file.write(str, sizeof(str));
+    cout << "Time " << str << " has been written into file." << endl;
+
+    // close the file
+    file.close();
+}
+
+// function to read time from the file
+void readTime(int* h, int* m, int* s) {
+    char str[10];
+    int inH, inM, inS;
+    fstream fin;
+
+    fin.open(FILE_NAME, ios::in | ios::binary);
+
+    if (!fin) {
+        cout << "Error in file opening..." << endl;
+        return;
+    }
+
+    if (fin.read((char*)str, sizeof(str))) {
+        // extract time values from the file
+        sscanf(str, "%02d:%02d:%02d", &inH, &inM, &inS);
+
+        // assign time into variables, which are passing in function
+        *h = inH;
+        *m = inM;
+        *s = inS;
+    }
+
+    fin.close();
+}
+
+int main() {
+    int h, m, s;
+
+    cout << "Enter hour: ";
+    cin >> h;
+    cout << "Enter minute: ";
+    cin >> m;
+    cout << "Enter second: ";
+    cin >> s;
+
+    // write time into file
+    writeTime(h, m, s);
+
+    // now, reset the variables
+    h = m = s = 0;
+
+    // read time from the file
+    readTime(&h, &m, &s);
+
+    // print the time
+    cout << "The time is " << setw(2) << setfill('0') << h << ":"
+         << setw(2) << setfill('0') << m << ":"
+         << setw(2) << setfill('0') << s << endl;
+
+    return 0;
+}
+            </code></pre>
+        </div>
+    </div>
+    <script>
+        function copyCode(id) {
+            var code = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(code).then(function() {
+                alert("Code copied to clipboard!");
+            }, function(err) {
+                alert("Error in copying code: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
